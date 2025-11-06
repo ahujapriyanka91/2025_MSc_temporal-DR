@@ -7,12 +7,13 @@
 
 #set align(center)
 #text(
-  heading("A Bachelor/Master Thesis Proposal", numbering: none, outlined: false), size: 1.15em
+  heading("A Master Thesis Proposal", numbering: none, outlined: false), size: 1.15em
 )
 #v(14pt)
 
-#text("<degree> Thesis Proposal - <student name>
-June 2025")
+#text("MSc Computer Science
+Priyanka Ahuja
+November 2025")
 \
 
 
@@ -24,59 +25,88 @@ June 2025")
 
 = Introduction
 
+Electroencephalographic data is a very high dimensional, complex and noisy time-series record of neural activity. These signals contain meaningful information about how the brain states change over time, but their complexity make it a challenge to analyze and visualize them directly.The information contained within this massive dataset is encoded in the continuous temporal flow of brain states. Such high dimensionality and complexity including the various features present a fundamental barrier to robust visualization and analysis. To study and identify the patterns of neural activity, also known as manifolds, dimensionality reduction methods are used to simplify the data while keeping the important information about how brain states evolve over time.
+\
+More recent approaches such as PHATE (Potential of Heat-diffusion for Affinity-based Transition Embedding), T-PHATE (Temporal-PHATE), and CEBRA.AI (Contrastive Embedding for Behavior and Representation Analysis) are designed to better preserve temporal and structural relationships in neural data.
+In this research, we will these compare advanced, time-aware algorithms along with standard dimensionality reduction approaches like PCA (Principal Component Analysis) and t-SNE. The goal is to identify which method can provide the best accurate data of brain states #cite(<Manifold>).
+
 == Motivation
-This is the motivation for your project. Why is it interesting?
+Traditional dimensionality reduction methods like PCA, t-SNE, and UMAP, have limitations when used for EEG data visualisation. EEG is a time-series data set in where the most important information lies in the continuous trajectory of brain states. These methods neglect the time-series information, resulting in disconnected irrelevant clusters.
+PHATE, T-PHATE, and CEBRA.AI are examples of recent advancements that concentrate on time-focused algorithms. These techniques seek to reveal transitions and temporal patterns of brain activity, such as the existence of ring or point attractors in brain states that are otherwise not revealed in traditional methods.
+\
 
-== Other work
-Here you add all the background findings, citing different studies and the like. You do not need to include text-book knowledge e.g. how exactly EEG works, except if you are working on the topic and require the detail. Think of writing this proposal for a fellow student, but one that was in the EEG/ET-courses already.
 
-=== Subheading 1
-Use this if you need to write about a topic in more detail. You can also refer to sources in your bibliography @QayyumY-sac2022. Prose citations, e.g. "according to #pc[@QayyumY-sac2022]" are also possible.
+== Related work
 
-=== Subheading 2
-Yet another subtopic.
+- The paper "Visualizing structure and transitions in high-dimensional biological data" #cite(<PHATE>) introduces PHATE, a dimensionality reduction technique designed for high-dimensional data where the preservation of continuous developmental trajectories is important.PHATE's methodology is based on diffusion geometry to focus on global structure and effectively de-noise the data. The process first captures local similarities, it then uses a diffusion process to transform the local similarities into probabilities that measure the probability of transitioning from one data point to another in a single step transition probabilities, which smooths out noise and reveals the continuous path (geodesic distance) along the manifold. The final embedding is then based on  potential distance information into low dimensions for visualization.The performance was validated based on DeMAP metric. The paper concludes that PHATE captures the true structure of high-dimensional data more accurately than traditional visualization methods like t-SNE, UMAP.
+\
+- The paper "Multi-view manifold learning of human brain-state trajectories" by Busch et al. (2023) #cite(<TPHATE>)introduces T-PHATE as a technique in manifold learning for analyzing time-series brain activity data, such as fMRI. It uses a approach of dual-view diffusion operator to embed time based data in a low-dimensional space.  T-PHATE is built on PHATE but has a temporal view by data's autocorrelation structure indicating how a signal is related to its past timestamp. It calculates the similarity between local time points in order to link nearby data points along the temporal sequence.The paper concludes that TPHATE shows ordered brain states trajectories by preserving the temporal continuity which are otherwise lost.
 
 \
+
+- The paper "Learnable latent embeddings for joint behavioural and neural analysis" by Schneider et al. (2023) #cite(<cebra>)introduces CEBRA, self-supervised learning algorithm. The algorithm defines "positive" (similar) and "negative" (dissimilar) points between neural activity points based on time or behavioral labels. Then, deep neural network is trained using a contrastive loss function. The network learns the low-dimensional embedding by continuously minimizing the loss function, pulling"positive" pairs closer together and "negative" pairs farther apart. The paper concludes that CEBRA produces consistent embeddings, meaning the low-dimensional map is stable and reliable and the resulting manifolds exhibited high decoding accuracy for both time and behavioral labels.
+
 = Planned Project
-== Research Question
-What is the main guiding question(s) you want to answer? For example,
-+ Is it easy to generate research questions?
-+ How many research questions does a proposal need?
-+ What is the answer to the question of Life, the Universe, and Everything?
+== Research Questions
+
+- What is the best way to assess dimensionality reduction methods?
+- Which dimensionality reduction method among PCA, t-SNE, UMAP, PHATE, T-PHATE, and CEBRA.AI produces the most accurate low-dimensional manifold for revealing the temporal state of EEG data?
+      \
+      Novelty of work:
+    Test the two most advanced, time-focused algorithms T-PHATE and CEBRA.AI against standard, time-ignoring methods like t-SNE, UMAP
 
 == Goals
-Here you define the goals you really want to reach, and the stretch goals. Please link the respective goal to the respective paragraphs in the section `Approach` (@approach), via e.g. wording or using the syntax shown.
+To assess data simulation using the UnfoldSim package in Julia and use python packages to implement PHATE, TPHATE and CEBRA.AI
 
 === Main Goals <mainGoals>
 #v(0.3em)
 #set enum(numbering: "A.")
 
+
 #[
   #show figure: set align(left) 
-  + #goal("I want to finish this Proposal.") <goal1>  
-  + #goal("I want to finish my Thesis.") <goal2>
+   + #goal("Simulate EEG data using UnfoldSim.jl") <goal1>  
+  + #goal("Implement visualisation techniques in Python") <goal1>  
+  
+  + #goal("To understand and compare the methods based on the ability to  preserve data") <goal1>  
+  + #goal("To discover hidden patterns in each method and state which method provides the clear low dimensional visualisation.") <goal2>
+  + #goal("Documenting the steps and procedure for easy understanding.") <goal2>
 ]
 
 
-=== Stretch Goals <stretchGoals>
+/*=== Stretch Goals <stretchGoals>
 #v(0.3em)
 #set enum(numbering: "A.", start: 3) // continue the numbering from where the main goals left off. Adjust `start` depending on how many main goals you have.
 #[
   #show figure: set align(left) 
   + #goal("I'll do another thesis if there is time.") <goal3>
   + #goal("Maybe another one as well.") <goal4>
-]
+] */
 
 == Approach <approach>
-How are you going to answer the research questions? For example:
+*Phase 1 *
+- Data Simulation: Use UnfoldSim.jl, a Julia package for simulating  timeseries data #cite(<unfoldsim>) focusing on EEG and event-related potentials (ERPs). 
 
-A thesis proposal will be written at first (*@goal1*). For *#underline[@goal2]*, further steps are required. Here in the source code you can see how to link back to the goals A,B,...,N. Click on the corresponding goal-number text (#underline[@goal3], *@goal4*) to go to the respective goal in the list, and change the formatting as per your wish - see the source code.
+\
+
+*Phase 2*
+ - Implementation: We will use dual-approach, Julia for data simulation along with python for its libraries to perform analysis and run algorithms: PCA, t-SNE, UMAP, PHATE, TPHATE and Cebra.AI and validate the low dimensional maps by using metrics on how accurate the maps are.
+- Different maps might have different metrics, understand the the performance across different methods to identify the best method for preserving temporal structure in EEG data. 
+- Understand and assess metrics like Spearman Rank Correlation and DeMap
+
+*Phase 3*
+- Compare all low dimensional maps to identify which method gives the most relevant information.
+
+*Phase 4*
+- Document the process and their visualization maps along with the findings for EEG data. 
+
 
 \
 
 = Plan
-\
-Write some 3-4 sentences on the order, but mainly focus on the time-table. Note that every planning time-table is subject to change and adaptation during the project. It is a first orientation, but should be discussed and adapted regularly.
+
+- Literature review and implementation will be carried out simultaneously to understand the EEG data as techniques like PHATE, TPHATE are recent developments.
+- Refer insights from the literature to understand the implementation pipeline and analysis procedure.
 
 
 
@@ -85,19 +115,19 @@ Write some 3-4 sentences on the order, but mainly focus on the time-table. Note 
   {
     import timeliney: *
       
-    headerline(group([*Jun*],[*Jul*],[*Aug*],[*Sept*],[*Oct*],[*Nov*]))
+    headerline(group([*Nov*],[*Dec*],[*Jan*],[*Feb*],[*Mar*],[*Apr*]))
     
-    task("Literature review", (0, 1), style: (stroke: 2pt + gray))
-    task("Writing Proposal (Goal A)", (0.5, 2), style: (stroke: 2pt + gray))
-    task("Thesis work (Goal B)", (1, 4), style: (stroke: 2pt + gray))
-    task("Buffer / Review / Stretch goals (Goal C-D)", (4,6), style: (stroke: 2pt + gray))
+    task("Literature review", (0, 3), style: (stroke: 2pt + gray))
+    task("Writing Proposal", (0.5, 5), style: (stroke: 2pt + gray))
+    task("Thesis work ", (1, 5), style: (stroke: 2pt + gray))
+    task("Review", (4,6), style: (stroke: 2pt + gray))
 
     milestone(
-      at: 4,
+      at: 5,
       style: (stroke: (dash: "dashed")),
       align(center, [
         *Main goal completion*\
-        Sept 2025
+        April 2025
       ])
     )
   }
