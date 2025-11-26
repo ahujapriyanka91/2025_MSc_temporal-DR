@@ -55,21 +55,31 @@ PHATE, T-PHATE and CEBRA.AI are recent advanced time-focused algorithms. They re
 \
 - The PHATE algorithm is also applied on the EEG dataset containing information about groups: schizophrenia (SZ) patients, Clinical High-Risk (CHR) (who show early symptoms), and Healthy Relatives (RSs) (who have a genetic risk) to detect the early stages of SZ disorder #cite(<schizophrenia>). The methodology starts with the initial dimensionality reduction of the EEG data using Principal Component Analysis (PCA) and then use this cleaned data in the PHATE algorithm. PHATE calculates the 3 dimensions that capture the most variation: PHATE1, PHATE2, PHATE3 and compares them among different groups. The study concludes that PHATE3 values are related to the positive and negative symptoms of SZ and can be used as the identifier.  It successfully differentiates between the healthy group and the CHR group, hence distinguishing who is most likely to progress to SZ.
 \
-- Techniques like UMAP, t-SNE, and PHATE treat brain activity as isolated snapshots, failing to generate the continuous temporal flow of information. A framework, Brain-dynamic Convolutional-Network-based Embedding (BCNE), is proposed to visualize and understand fMRI and EEG data #cite(<BCNE>).
-  It combines the strength of T-PHATE in temporal signal processing with deep neural network-based techniques, CEBRA to generate 2D maps that can be used in the detection and interpretation of cognitive and behavioral patterns.
+- Techniques like UMAP, t-SNE, and PHATE treat brain activity as isolated snapshots, failing to generate the continuous temporal flow of information. A framework, Brain-dynamic Convolutional-Network-based Embedding (BCNE), has been proposed to visualize and understand the fMRI and EEG data #cite(<BCNE>).
+  BCNE methodology starts with temporal processing, focusing on temporal dependencies by calculating an autocorrelation-based affinity matrix. Then it moves to the spatial-channel modeling and image construction phase that calculates pairwise channel relationships and reorganizes the channel responses into a 2D image for each timepoint. These images are then processed through a convolutional neural network (CNN) that learns a low-dimensional embedding by minimizing the KL divergence between the high-dimensional and low-dimensional probability matrices.
+  A recursive refinement is implemented to improve the trajectory outcome by replacing the initial high-dimensional matrices with feature vectors extracted from the dense layers of the CNN.
+  
   The study states that BCNE generates clear time trajectories for visualization of brain activity in comparison to PCA, UMAP, PHATE, T-PHATE and CEBRA.
+\
+- T-SNE dimensionality reduction works by constructing a probability distribution over pairs of high-dimensional data points in such a way that similar points are assigned a higher probability while dissimilar points are assigned a lower probability. Then, t-SNE maps a similar probability distribution in the low-dimensional map, and it minimizes the Kullback–Leibler divergence between the two distributions with respect to the locations of the points in the map. T-SNE thus arranges points in the low-dimensional map such that their spatial relationships reflect the similarity structure present in the original high-dimensional data.
+
+
+  But comparing each data point with every other data point will take a lot of time to compute. Hence, Barnes-Hut t-SNE method #cite(<barnes>) is introduced for faster computation by grouping distant points and treating each group as a single aggregated point, instead of treating the points individually. This drastically reduces the number of pairwise interactions that need to be computed. To do this grouping, the map is divided quad-trees, so the algorithm can quickly decide which groups are distant. This approach can be applied to EEG data visualization, where large amounts of high-dimensional time-series data are transformed into low-dimensional maps.
 
 = Planned Project
 == Research Questions
 
-- What is the best way to assess dimensionality reduction methods for EEG data among PCA, t-SNE, UMAP, PHATE, T-PHATE, and CEBRA.AI  ? 
+- What is the best way to assess dimensionality reduction methods for EEG data among PCA, t-SNE, UMAP, PHATE, T-PHATE, CEBRA.AI, BCNE? 
 
 - Which dimensionality reduction method produces the most accurate low-dimensional manifold for revealing the temporal state of EEG data? 
-Novelty of work: Test the most advanced, time-focused algorithms: PHATE, T-PHATE and CEBRA.AI on EEG data against standard, time-ignoring methods like t-SNE and UMAP.
+
+== Novelty of work 
+- We systematically evaluate time-preserving vs. time-agnostic dimensionality reduction methods (PHATE, T-PHATE, CEBRA.AI, BCNE vs. t-SNE, UMAP) specifically for simulated ERP data, which has not been thoroughly assessed in prior research.
+- We demonstrate how different algorithms influence the interpretability of ERP components.
     
 
 == Goals
-To assess data simulation using the UnfoldSim package in Julia and use Python packages to implement PHATE, T-PHATE and CEBRA.AI.
+To assess data simulation using the UnfoldSim package in Julia and use Python packages to implement PHATE, T-PHATE, CEBRA.AI and BCNE.
 
 === Main Goals <mainGoals>
 #v(0.3em)
@@ -81,45 +91,50 @@ To assess data simulation using the UnfoldSim package in Julia and use Python pa
    + #goal("Simulate EEG data using UnfoldSim.jl.") <goal1>  
   + #goal("Implement dimensionality reduction and visualization techniques on simulated EEG data in Python.") <goal2>  
   
-  + #goal("To understand and compare the methods based on the ability to  preserve the structure of data.") <goal3>  
-  + #goal("To review the research papers that use PHATE, T-PHATE and Cebra.AI methods for EEG datasets.") <goa14>  
+  + #goal("Understand and compare the methods based on the ability to  preserve the structure of data.") <goal3>  
+  + #goal("Review the research papers that use PHATE, T-PHATE, Cebra.AI, BCNE methods for EEG datasets.") <goa14>  
   
-  + #goal("To discover hidden patterns in each method and state which method provides the clear low-dimensional visualization.") <goal5>
+  + #goal("Discover hidden patterns in each method and state which method provides the clear low-dimensional visualization.") <goal5>
   + #goal("Documenting the steps and procedure for easy understanding.") <goal6>
 ]
 
 
-=== Stretch Goals <stretchGoals>
-#v(0.3em)
-#set enum(numbering: "A.", start: 1) // continue the numbering from where the main goals left off. Adjust `start` depending on how many main goals you have.
-#[
-  #show figure: set align(left) 
-  + #goal("Understand and implement Brain-dynamic Convolutional-Network-based Embedding (BCNE).") <goal7>
-] 
+
 
 == Approach <approach>
 *Phase 1 *
-- Data Simulation: Use UnfoldSim.jl, a Julia package for simulating  timeseries data #cite(<unfoldsim>) focusing on EEG and event-related potentials (ERPs). 
-\
+- Data Simulation: Use UnfoldSim.jl, a Julia package for simulating  time series data #cite(<unfoldsim>) focusing on EEG and event-related potentials (ERPs). 
+- Simulate EEG data with 32 channels using the predef_eeg function, generating realistic signals based on 4 ERP components: N170, P300, N1, and P1.
+- Simulate 5 trials for 2 conditions and deactivate components one by one to see the differences and effects on the data.
+- Expected geometry after dimensionality reduction (PHATE, TPHATE, BCNE): Branch trajectory structure for 4 different components such as P300, N170, P1 and N1 starting from same initial time point. There might be space-related differences as there are 32 channels for each ERP component.
+
+
 *Phase 2*
- - Implementation: We will use dual approach,  Julia for data simulation along with Python for its libraries to perform analysis and run algorithms: PCA, t-SNE, UMAP, PHATE, T-PHATE and Cebra.AI and validate the low-dimensional maps by using metrics on how accurate the maps are.
+ - Implementation: Use dual approach:  Julia for data simulation along with Python for its libraries to perform analysis and run algorithms: PCA, t-SNE, UMAP, PHATE, T-PHATE and Cebra.AI. Validate the low-dimensional maps by using metrics on how accurate the maps are.
 
-- Different maps might have different metrics such as DeMAP, K-nearest neighbor (KNN) , support vector machine (SVM) and Spearman correlation. 
+- Different studies have used different assessment criteria such as DeMAP, K-nearest neighbor (KNN), Representational Similarity Analysis, Pearson correlation. 
 
-- Understand the metrics performance across different methods and identify the best method for preserving temporal structure in EEG data. 
-\
+- Understand the metrics performance across different methods and identify the methods for preserving temporal structure in EEG data that can be used to compare the dimensionality reduction methods. 
+
 *Phase 3*
-- Compare all low-dimensional maps to identify which method gives the most relevant information.
-\
+- Visually compare all low-dimensional maps to identify which method gives the most relevant information.
+- Apply evaluation metrics:
+ - Pearson correlation and Representational Similarity Analysis (RSA) for comparing pairwise distances between embeddings.
+ - Trustworthiness and Continuity metrics to understand preservation of local and global structure.
+ - Direction accuracy and stage accuracy.
+
 *Phase 4*
 - Document the process and their visualization maps along with the findings for EEG data. 
-\
 
 = Plan
 
-- Literature review and implementation will be carried out simultaneously to understand the EEG dataset as techniques like PHATE, T-PHATE are recent developments. 
+- Month 1: Understand the data simulation and dimensionality reduction methods.
 
-- Refer to insights from the literature to understand the implementation pipeline and analysis procedure.
+- Month 2 and 3: Literature review and implementation will be carried out simultaneously to understand the EEG dataset as techniques like PHATE, T-PHATE and BCNE are recent developments. 
+    Refer to insights from the literature to understand the implementation pipeline and analysis procedure and start documenting.
+- Month 4 and 5: Test and understand the evaluation metrics.
+- Month 6: Review and documentation.
+
 
 
 
@@ -132,8 +147,9 @@ To assess data simulation using the UnfoldSim package in Julia and use Python pa
     
     task("Literature review", (0, 3), style: (stroke: 2pt + gray))
     task("Writing Proposal", (0.5, 1), style: (stroke: 2pt + gray))
-    task("Thesis work ", (1, 5.5), style: (stroke: 2pt + gray))
-    task("Review", (4.5,7), style: (stroke: 2pt + gray))
+    task("Implementation of algorithms", (1, 5.5), style: (stroke: 2pt + gray))
+    task("Metrics evaluation", (3, 5.5), style: (stroke: 2pt + gray))
+    task("Review and documentation", (4.5,7), style: (stroke: 2pt + gray))
 
     milestone(
       at: 6.5,
