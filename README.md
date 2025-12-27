@@ -1,7 +1,7 @@
 # **MSc-Thesis:** Evaluating Temporal Dimensionality Reduction Methods for ERP-Structured EEG Dat
-**Author:** *Benedikt Ehinger*
+**Author:** *Priyanka Ahuja*
 
-**Supervisor(s):** *Vladimir Mikheev *
+**Supervisor(s):** Benedikt Ehinger*, *Vladimir Mikheev*
 
 **Year:** *2025*
 
